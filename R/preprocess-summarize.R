@@ -50,7 +50,7 @@ summarizeData <- function(df, agg, to_agg, ...) {
   summ_var <- rlang::enquo(to_agg)
   df %>%
     dplyr::group_by(!!! group_var) %>%
-    dplyr::summarise(!! summ_var := agg(agg, !! summ_var))
+    dplyr::summarise(!! summ_var := dsvizprep::agg(agg, !! summ_var))
 }
 
 
