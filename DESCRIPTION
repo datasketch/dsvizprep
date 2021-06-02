@@ -1,16 +1,31 @@
 Package: dsvizprep
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
-Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
-Encoding: UTF-8
+Title: Data processing
+Version: 0.1.0
+Author: Datasketch
+Maintainer: Juan Pablo Marin Diaz <jpmarindiaz@gmail.com>
+Description: Data processing to plot in packages ds
+Depends:
+    R (>= 3.0.0),
+    tidyr,
+    purrr,
+    homodatum,
+    makeup,
+    geodata,
+    yaml,
+    dplyr,
+    sf
+Suggests: 
+    testthat (>= 2.1.0),
+    knitr,
+    rmarkdown
+Remotes:
+    datasketch/geodata,
+    datasketch/homodatum,
+    datasketch/makeup
+VignetteBuilder: 
+    knitr
+License: MIT + file LICENSE
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+Encoding: UTF-8
