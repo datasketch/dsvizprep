@@ -1,16 +1,20 @@
 # sort and slice
 #'@export
-postprocess <- function(d, col, sort, slice_n = NULL) {
-  if (sort == "asc") {
+postprocess <- function(d, col, sort = NULL, slice_n = NULL) {
+
+  if (is.null(sort)) {
+    d <- d
+  } else if (sort == "asc") {
     d <- d[order(d[col],na.last = TRUE),]
-  }
-  if (sort == "desc") {
+  } else if (sort == "desc") {
     d <- d[order(-as.numeric(d[[col]]), na.last = TRUE),]
   }
+
   if (!is.null(slice_n)) {
     d <- d %>%
       dplyr::slice(1:slice_n)
   }
+
   d
 }
 
