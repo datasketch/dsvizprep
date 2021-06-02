@@ -2,10 +2,10 @@
 #'@export
 postprocess <- function(d, col, sort, slice_n = NULL) {
   if (sort == "asc") {
-    d <- d[order(d[col]),]
+    d <- d[order(d[col],na.last = TRUE),]
   }
   if (sort == "desc") {
-    d <- d[order(-d[col]),]
+    d <- d[order(-as.numeric(d[[col]]), na.last = TRUE),]
   }
   if (!is.null(slice_n)) {
     d <- d %>%
