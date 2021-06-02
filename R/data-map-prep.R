@@ -99,18 +99,18 @@ data_map_prep <- function (data,
 
   if (has_geo | has_cor) {
     if (length(var_group) == 1) {
-      dd <- dsvizopts::function_agg(dd, agg, to_agg = var_num, a)
+      dd <- dsvizprep::function_agg(dd, agg, to_agg = var_num, a)
       ptage_col <- NULL
     } else if (length(var_group) == 2) {
-      dd <- dsvizopts::function_agg(dd, agg, to_agg = var_num, a, b)
+      dd <- dsvizprep::function_agg(dd, agg, to_agg = var_num, a, b)
     } else if (length(var_group) == 3) {
-      dd <- dsvizopts::function_agg(dd, agg, to_agg = var_num, a, b, c)
+      dd <- dsvizprep::function_agg(dd, agg, to_agg = var_num, a, b, c)
     }
   }
 
   if (!is.null(ptage_col))  ptage_col <- names(nms[match(ptage_col, nms)])
 
-  dd <- dsvizopts::percentage_data(dd, agg_var = agg_var, by_col = ptage_col)
+  dd <- dsvizprep::percentage_data(dd, agg_var = agg_var, by_col = ptage_col)
 
   if (add_cols) {
     join_cols <- dic_p$id[1:length(var_group)]
@@ -141,11 +141,11 @@ data_map_prep <- function (data,
     }
 
     if (length(join_cols) == 1) {
-      dj <- dsvizopts::collapse_data(dj, a)
+      dj <- dsvizprep::collapse_data(dj, a)
     } else if (length(join_cols) == 2) {
-      dj <- dsvizopts::collapse_data(dj, a, b)
+      dj <- dsvizprep::collapse_data(dj, a, b)
     } else if (length(join_cols) == 3) {
-      dj <- dsvizopts::collapse_data(dj, a, b, c)
+      dj <- dsvizprep::collapse_data(dj, a, b, c)
     }
 
     dd <- dd %>% dplyr::left_join(dj, by = join_cols)
