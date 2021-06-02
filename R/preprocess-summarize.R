@@ -72,7 +72,7 @@ function_agg <- function (df, agg, to_agg, ...) {
   } else {
     dd <- df %>%
       dplyr::group_by(!!!group_var) %>%
-      dplyr::summarise(dplyr::across(to_agg, ~ dsvizopts::agg(agg, .x)), ..count = dplyr::n())
+      dplyr::summarise(dplyr::across(to_agg, ~ dsvizprep::agg(agg, .x)), ..count = dplyr::n())
   }
   dd
 
@@ -83,7 +83,7 @@ simple_summary <- function(df, agg, to_agg, ...) {
   group_var <- rlang::enquos(...)
   dd <- df %>%
     dplyr::group_by(!!!group_var) %>%
-    dplyr::summarise(dplyr::across(to_agg, ~ dsvizopts::agg(agg, .x)))
+    dplyr::summarise(dplyr::across(to_agg, ~ dsvizprep::agg(agg, .x)))
   dd
 }
 
