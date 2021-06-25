@@ -2,6 +2,12 @@
 
 test_that("data_charts_prep() works with simples arguments", {
 
+  df <- data.frame(x = "1")
+  df$x <- as_Cat(df$x)
+  out <- data_charts_prep(data = df, ftype = "Cat", agg= "sum", ptage_col = NULL,
+                          palette = "#FEAFEA")
+  out <- out$data
+
   df <- sample_data("Cat")
   out <- data_charts_prep(data = df, ftype = "Cat", agg= "sum", ptage_col = NULL,
                           palette = "#FEAFEA")

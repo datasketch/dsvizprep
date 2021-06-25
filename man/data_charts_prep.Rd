@@ -9,6 +9,7 @@ data_charts_prep(
   ftype,
   agg,
   color_by = NULL,
+  ptage = FALSE,
   ptage_col = NULL,
   drop_na = FALSE,
   na_label = "na",

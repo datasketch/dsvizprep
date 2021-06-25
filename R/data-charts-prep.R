@@ -21,6 +21,7 @@ data_charts_prep <- function (data,
                               ftype,
                               agg,
                               color_by = NULL,
+                              ptage = FALSE,
                               ptage_col = NULL,
                               drop_na = FALSE,
                               na_label = "na",
@@ -59,8 +60,6 @@ data_charts_prep <- function (data,
                  hdType = rep("Num", 3), stringsAsFactors = FALSE)
     )
 
-
-
   # dictionary and data preparation when variable is yea or pct -------------
 
   if (grepl("Pct", frtype)) {
@@ -97,6 +96,7 @@ data_charts_prep <- function (data,
     var_num <- dic_p %>% dplyr::filter(hdType %in% "Num") %>% .$id
     agg_var <- names(nms)[grep("Num", ftype_vec)]
   }
+
 
   has_cat <- grepl("Cat|Gnm|Gcd|Yea|Dat", ftype)
   var_cat <- NULL
@@ -212,11 +212,51 @@ data_charts_prep <- function (data,
     }
   }
 
+  if (has_num) {
+    if (is.null(var_cat)) {
+      nms_lab <- nms[names(nms) %in% c("a", "b", "c", "d")]
+    } else {
+      if (length(var_cat) == 1) {
+        if (ptage) {
+          nms_lab <- nms[names(nms) %in% c("a", "..percentage")]
+          dd$value <- dd$..percentage
+        } else {
+          nms_lab <- nms[names(nms) %in% c("a", "b")]
+        }
+      } else if (length(var_cat) == 2) {
+        if (ptage) {
+          nms_lab <- nms[names(nms) %in% c("b", "..percentage")]
+          dd$value <- dd$..percentage
+        } else {
+          nms_lab <- nms[names(nms) %in% c( "b", "c")]
+        }
+      }
+    }
+  } else {
+    if (length(var_cat) == 1) {
+      if (ptage) {
+        nms_lab <- nms[names(nms) %in% c("a", "..percentage")]
+        dd$value <- dd$..percentage
+      } else {
+        nms_lab <- nms[names(nms) %in% c("a", "..count")]
+      }
+    } else if (length(var_cat) == 2) {
+      if (ptage) {
+        nms_lab <- nms[names(nms) %in% c("b", "..percentage")]
+        dd$value <- dd$..percentage
+      } else {
+        nms_lab <- nms[names(nms) %in% c( "b", "..count")]
+      }
+    }
+  }
+
+
+
   l <- list(
     data = dd,
     dic = dic,
-    nms = nms#,
-    #nms_tooltip = nms_tooltip #default tooltip when this is null
+    nms = nms,
+    nms_lab= nms_lab
   )
   l
 
