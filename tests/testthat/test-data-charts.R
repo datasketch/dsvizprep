@@ -21,6 +21,12 @@ test_that("data_charts_prep() works with simples arguments", {
   expect_identical(names(out), c("a", "..count", "..percentage", "b", "c", "value", "..colors"))
 
 
+  df <- sample_data("Cat-Num")
+  out <- data_charts_prep(data = df, ftype = "Cat-Num", agg= "sum", ptage_col = NULL,
+                          palette = c("#385573", "#ffa92a", "#f06142", "#99e8b3", "#32a8ce", "#996295", "#e59fd7"))
+  out <- out$data
+  expect_identical(names(out), c("a", "..count", "..percentage", "b", "c", "value", "..colors"))
+
   df <- sample_data("Dat-Cat-Num")
   out <- data_charts_prep(data = df, ftype = "Dat-Cat", agg= "sum", ptage_col = NULL,
                           palette = "#FEAFEA")

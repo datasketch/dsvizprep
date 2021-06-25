@@ -2,6 +2,7 @@
 
 export(agg)
 export(collapse_data)
+export(data_charts_prep)
 export(data_map_prep)
 export(format_prep)
 export(function_agg)

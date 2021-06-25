@@ -180,15 +180,13 @@ data_charts_prep <- function (data,
   if (length(var_cat) == 2) color_by <- "a"
 
 
-  # if ("color" %in% dic$hdType) {
-  #   dd$..colors <- dd[[dic$id[dic$hdType == "color"][1]]]
-  # } else {
-  #   if (length(var_cat) == 1) {
-  #     dd$..colors <- palette[1]
-  #   } else {
-  #     dd$..colors <- paletero::map_colors(dd, color_by, palette, colors_df = NULL)
-  #   }
-  # }
+
+  if ("color" %in% dic$hdType) {
+    dd$..colors <- dd[[dic$id[dic$hdType == "color"][1]]]
+  } else {
+    dd$..colors <- paletero::map_colors(dd, color_by, palette, colors_df = NULL)
+  }
+
 
   if (!is.null(highlight_value)) {
     if (sum(grepl("Dat|Cat|Yea", ftype_vec)) == 2) dd$..colors <- palette[1]
