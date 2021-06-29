@@ -20,6 +20,7 @@
 data_charts_prep <- function (data,
                               ftype,
                               agg,
+                              plot,
                               color_by = NULL,
                               ptage = FALSE,
                               ptage_col = NULL,
@@ -35,6 +36,7 @@ data_charts_prep <- function (data,
                               order = NULL,
                               label_wrap_legend = NULL,
                               label_wrap = NULL,
+                              scatter_opts = NULL,
                               group_extra_num = TRUE) {
 
 
@@ -43,23 +45,29 @@ data_charts_prep <- function (data,
 
   f <- homodatum::fringe(data)
   nms <- homodatum::fringe_labels(f)
-  nms[length(nms)+1] <- c("%")
-  names(nms) <- c(names(nms)[-length(nms)], "..percentage")
-  nms[length(nms)+1] <- c("Count")
-  names(nms) <- c(names(nms)[-length(nms)], "..count")
+
+
+  if (plot != "scatter") {
+    nms[length(nms)+1] <- c("%")
+    names(nms) <- c(names(nms)[-length(nms)], "..percentage")
+    nms[length(nms)+1] <- c("Count")
+    names(nms) <- c(names(nms)[-length(nms)], "..count")
+  }
+
   d <- homodatum::fringe_d(f)
 
   frtype <- f$frtype
   dic <- f$dic
   dic$id <- names(d)
 
+  if (plot != "scatter") {
   dic <- dic %>%
     dplyr::bind_rows(
       data.frame(id = c("..percentage", "..count", "value"),
                  label = c("Percentage", "Count", "Domain"),
                  hdType = rep("Num", 3), stringsAsFactors = FALSE)
     )
-
+}
   # dictionary and data preparation when variable is yea or pct -------------
 
   if (grepl("Pct", frtype)) {
@@ -116,6 +124,7 @@ data_charts_prep <- function (data,
   }
 
   # case where the data contains categories
+  if (plot != "scatter") {
   if (has_cat) {
     if (length(var_cat) == 1) {
       dd <- dsvizprep::function_agg(dd, agg, to_agg = var_num, a)
@@ -128,13 +137,16 @@ data_charts_prep <- function (data,
       dd <- dsvizprep::function_agg(dd, agg, to_agg = var_num, a, b, c)
     }
   }
+  }
 
 
 
   # percentage calculation
   if (!is.null(ptage_col))  ptage_col <- names(nms[match(ptage_col, nms)])
-  dd <- dsvizprep::percentage_data(dd, agg_var = agg_var, by_col = ptage_col)
-
+  if (plot != "scatter") {
+    dd <- dsvizprep::percentage_data(dd, agg_var = agg_var, by_col = ptage_col)
+  }
+  #pensar calculo de porcentaje en scatter
 
   # add extra columns
   if (add_cols) {
@@ -174,7 +186,7 @@ data_charts_prep <- function (data,
     }
   }
 
-  dd$value <- dd[[agg_var]]
+  if (plot != "scatter") dd$value <- dd[[agg_var]]
 
   if (!is.null(color_by)) color_by <- names(nms[match(color_by, nms)])
   if (length(var_cat) == 2) color_by <- "a"
@@ -215,13 +227,29 @@ data_charts_prep <- function (data,
   if (has_num) {
     if (is.null(var_cat)) {
       nms_lab <- nms[names(nms) %in% c("a", "b", "c", "d")]
+      dd$value_x <- dd$a
+      dd$value_y <- dd$b
+      if (length(var_num) > 2) {
+        dd$value_z <- dd$c
+      }
     } else {
       if (length(var_cat) == 1) {
-        if (ptage) {
-          nms_lab <- nms[names(nms) %in% c("a", "..percentage")]
-          dd$value <- dd$..percentage
+        if (plot != "scatter") {
+          if (ptage) {
+            nms_lab <- nms[names(nms) %in% c("a", "..percentage")]
+            dd$value <- dd$..percentage
+          } else {
+            nms_lab <- nms[names(nms) %in% c("a", "b", "c")]
+          }
         } else {
-          nms_lab <- nms[names(nms) %in% c("a", "b")]
+          # despues se debe agregar nms_lab segun variable de porcentaje
+          nms_lab <- nms[names(nms) %in% c("b", "c")]
+          dd$value_cat <- dd$a
+          dd$value_x <- dd$b
+          dd$value_y <- dd$c
+          if (length(var_num) > 2) {
+            dd$value_z <- dd$d
+          }
         }
       } else if (length(var_cat) == 2) {
         if (ptage) {

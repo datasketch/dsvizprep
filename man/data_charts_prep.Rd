@@ -8,6 +8,7 @@ data_charts_prep(
   data,
   ftype,
   agg,
+  plot,
   color_by = NULL,
   ptage = FALSE,
   ptage_col = NULL,
@@ -23,6 +24,7 @@ data_charts_prep(
   order = NULL,
   label_wrap_legend = NULL,
   label_wrap = NULL,
+  scatter_opts = NULL,
   group_extra_num = TRUE
 )
 }
