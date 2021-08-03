@@ -13,6 +13,7 @@ agg <- function(aggregation, ...) {
 #' Drop NA
 #' @param d A data frame
 #' @param drop_na A logical value indicating if remove NA values
+#' @importFrom dplyr %>%
 #' @export
 preprocessData <- function(d, drop_na = FALSE,
                            na_label = NULL, na_label_cols = NULL){
