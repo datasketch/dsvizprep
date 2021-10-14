@@ -157,7 +157,7 @@ data_map_prep <- function (data,
 
   dd$value <- dd[[agg_var]]
   nms_tooltip <- stats::setNames(dic_p$label, dic_p$id)
-
+  dic$hdType[dic$hdType == "Pct"] <- "Num"
   l <- list(
     data = dd,
     dic = dic,
