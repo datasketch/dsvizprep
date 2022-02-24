@@ -93,6 +93,8 @@ data_map_prep <- function (data,
   has_cor <- grepl("Gln|Glt", ftype)
   var_cor <- NULL
   if (has_cor) {
+    dic_p[1,3] <- "Gln"
+    dic_p[2,3] <- "Glt"
     var_cor <- dic_p %>% dplyr::filter(hdType %in% c("Gln", "Glt")) %>% .$id
     var_group <- c(var_group, var_cor)
   }
