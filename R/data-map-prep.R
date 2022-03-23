@@ -26,6 +26,7 @@ data_map_prep <- function (data,
                            ftype,
                            agg,
                            color_by = NULL,
+                           ptage = FALSE,
                            ptage_col = NULL,
                            more_levels = FALSE,
                            group_extra_num = TRUE) {
@@ -80,6 +81,8 @@ data_map_prep <- function (data,
     var_num <- dic_p %>% dplyr::filter(hdType %in% "Num") %>% .$id
     agg_var <- names(nms)[grep("Num", ftype_vec)]
   }
+
+
 
   has_cat <- grepl("Cat", ftype)
   var_cat <- NULL
@@ -156,7 +159,11 @@ data_map_prep <- function (data,
 
 
   if (!is.null(color_by)) agg_var <- names(nms[match(color_by, nms)])
-
+print(names(dd))
+  if (ptage == TRUE) {
+    agg_var <- "..percentage"
+  }
+  print(agg_var)
   dd$value <- dd[[agg_var]]
   nms_tooltip <- stats::setNames(dic_p$label, dic_p$id)
   dic$hdType[dic$hdType == "Pct"] <- "Num"

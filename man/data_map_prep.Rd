@@ -9,6 +9,7 @@ data_map_prep(
   ftype,
   agg,
   color_by = NULL,
+  ptage = FALSE,
   ptage_col = NULL,
   more_levels = FALSE,
   group_extra_num = TRUE
