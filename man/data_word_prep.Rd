@@ -4,7 +4,7 @@
 \alias{data_word_prep}
 \title{Clean text to plot wordCloud}
 \usage{
-data_word_prep(data, ftype = NULL)
+data_word_prep(data, ftype = NULL, lang = "es", stopwords = FALSE)
 }
 \arguments{
 \item{data}{A data frame with geografical info.}
