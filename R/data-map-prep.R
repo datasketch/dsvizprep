@@ -159,13 +159,16 @@ data_map_prep <- function (data,
 
 
   if (!is.null(color_by)) agg_var <- names(nms[match(color_by, nms)])
-print(names(dd))
+
   if (ptage == TRUE) {
     agg_var <- "..percentage"
   }
-  print(agg_var)
+
   dd$value <- dd[[agg_var]]
+
+  dic_p$id[nrow(dic_p)] <- "value"
   nms_tooltip <- stats::setNames(dic_p$label, dic_p$id)
+
   dic$hdType[dic$hdType == "Pct"] <- "Num"
   l <- list(
     data = dd,
