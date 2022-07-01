@@ -1,4 +1,2 @@
-^renv$
-^renv\.lock$
 ^dsvizprep\.Rproj$
 ^\.Rproj\.user$
