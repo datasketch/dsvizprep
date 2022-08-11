@@ -52,6 +52,12 @@ data_map_prep <- function (data,
   }
   frtype <- f$frtype
   dic <- f$dic
+
+
+  ftype_vec <- stringr::str_split(ftype,pattern = "-") %>% unlist()
+  ftype_length <- length(ftype_vec)
+  dic$hdType[1:ftype_length] <- ftype_vec
+
   if (more_levels) dic$hdType[1] <- "Gnm"
   dic$id <- names(d)
 
@@ -64,8 +70,6 @@ data_map_prep <- function (data,
 
   ncols_d <- ncol(d)
 
-  ftype_vec <- stringr::str_split(ftype,pattern = "-") %>% unlist()
-  ftype_length <- length(ftype_vec)
 
   add_cols <- ncols_d != ftype_length
 
@@ -107,7 +111,11 @@ data_map_prep <- function (data,
       dd <- dsvizprep::function_agg(dd, agg, to_agg = var_num, a)
       ptage_col <- NULL
     } else if (length(var_group) == 2) {
-      dd <- dsvizprep::function_agg(dd, agg, to_agg = var_num, a, b)
+      if (any(grepl("Cat",ftype_vec))) {
+        dd <- dsvizprep:::function_agg_cat(dd, "b")
+      } else {
+        dd <- dsvizprep::function_agg(dd, agg, to_agg = var_num, a, b)
+      }
     } else if (length(var_group) == 3) {
       dd <- dsvizprep::function_agg(dd, agg, to_agg = var_num, a, b, c)
     }

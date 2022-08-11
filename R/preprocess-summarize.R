@@ -55,6 +55,14 @@ summarizeData <- function(df, agg, to_agg, ...) {
 }
 
 
+#'
+function_agg_cat <- function (df, var_cat, ...) {
+  varToGroup <- dplyr::sym(var_cat)
+  dd <- df %>% dplyr::group_by(!!varToGroup) %>% dplyr::mutate(..count = dplyr::n())
+  dd
+}
+
+
 #' Sum, mean. median o count of initial data
 #'
 #' \code{function_agg} returns the operation of all the values present in its arguments.
@@ -65,6 +73,8 @@ summarizeData <- function(df, agg, to_agg, ...) {
 #' @export
 function_agg <- function (df, agg, to_agg, ...) {
   group_var <- rlang::enquos(...)
+
+
 
   if (is.null(to_agg)) {
     dd <- df %>%
