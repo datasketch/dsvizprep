@@ -12,7 +12,8 @@ data_map_prep(
   ptage = FALSE,
   ptage_col = NULL,
   more_levels = FALSE,
-  group_extra_num = TRUE
+  group_extra_num = TRUE,
+  cluster = FALSE
 )
 }
 \arguments{

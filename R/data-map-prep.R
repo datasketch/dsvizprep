@@ -29,7 +29,8 @@ data_map_prep <- function (data,
                            ptage = FALSE,
                            ptage_col = NULL,
                            more_levels = FALSE,
-                           group_extra_num = TRUE) {
+                           group_extra_num = TRUE,
+                           cluster = FALSE) {
 
   if (is.null(data)) return()
 
@@ -73,95 +74,103 @@ data_map_prep <- function (data,
 
   add_cols <- ncols_d != ftype_length
 
-  dd <- d[,1:ftype_length]
-  dic_p <- dic %>% dplyr::filter(id %in% names(dd))
+
+    dd <- d[,1:ftype_length]
+    dic_p <- dic %>% dplyr::filter(id %in% names(dd))
 
 
-  # type data to work
-  has_num <- grepl("Num", ftype)
-  var_num <- NULL
-  agg_var <- "..count"
-  if (has_num) {
-    var_num <- dic_p %>% dplyr::filter(hdType %in% "Num") %>% .$id
-    agg_var <- names(nms)[grep("Num", ftype_vec)]
-  }
+    # type data to work
+    has_num <- grepl("Num", ftype)
+    var_num <- NULL
+    agg_var <- "..count"
+    if (has_num) {
+      var_num <- dic_p %>% dplyr::filter(hdType %in% "Num") %>% .$id
+      agg_var <- names(nms)[grep("Num", ftype_vec)]
+    }
 
 
+    if (!cluster) {
+    has_cat <- grepl("Cat", ftype)
+    var_cat <- NULL
+    if (has_cat) var_cat <- dic_p %>% dplyr::filter(hdType %in% "Cat") %>% .$id
 
-  has_cat <- grepl("Cat", ftype)
-  var_cat <- NULL
-  if (has_cat) var_cat <- dic_p %>% dplyr::filter(hdType %in% "Cat") %>% .$id
+    has_geo <- grepl("Gcd|Gnm", ftype)
+    var_group <- NULL
+    if (has_geo) var_group <- dic_p %>% dplyr::filter(hdType %in% c("Gcd", "Gnm")) %>% .$id
+    if (!is.null(var_cat)) var_group <- c(var_group, var_cat)
 
-  has_geo <- grepl("Gcd|Gnm", ftype)
-  var_group <- NULL
-  if (has_geo) var_group <- dic_p %>% dplyr::filter(hdType %in% c("Gcd", "Gnm")) %>% .$id
-  if (!is.null(var_cat)) var_group <- c(var_group, var_cat)
+    has_cor <- grepl("Gln|Glt", ftype)
+    var_cor <- NULL
+    if (has_cor) {
+      dic_p[1,3] <- "Gln"
+      dic_p[2,3] <- "Glt"
+      var_cor <- dic_p %>% dplyr::filter(hdType %in% c("Gln", "Glt")) %>% .$id
+      var_group <- c(var_group, var_cor)
+    }
 
-  has_cor <- grepl("Gln|Glt", ftype)
-  var_cor <- NULL
-  if (has_cor) {
-    dic_p[1,3] <- "Gln"
-    dic_p[2,3] <- "Glt"
-    var_cor <- dic_p %>% dplyr::filter(hdType %in% c("Gln", "Glt")) %>% .$id
-    var_group <- c(var_group, var_cor)
-  }
-
-  if (has_geo | has_cor) {
-    if (length(var_group) == 1) {
-      dd <- dsvizprep::function_agg(dd, agg, to_agg = var_num, a)
-      ptage_col <- NULL
-    } else if (length(var_group) == 2) {
-      if (any(grepl("Cat",ftype_vec))) {
-        dd <- dsvizprep:::function_agg_cat(dd, "b")
-      } else {
-        dd <- dsvizprep::function_agg(dd, agg, to_agg = var_num, a, b)
+    if (has_geo | has_cor) {
+      if (length(var_group) == 1) {
+        dd <- dsvizprep::function_agg(dd, agg, to_agg = var_num, a)
+        ptage_col <- NULL
+      } else if (length(var_group) == 2) {
+        if (any(grepl("Cat",ftype_vec))) {
+          dd <- dsvizprep:::function_agg_cat(dd, "b")
+        } else {
+          dd <- dsvizprep::function_agg(dd, agg, to_agg = var_num, a, b)
+        }
+      } else if (length(var_group) == 3) {
+        dd <- dsvizprep::function_agg(dd, agg, to_agg = var_num, a, b, c)
       }
-    } else if (length(var_group) == 3) {
-      dd <- dsvizprep::function_agg(dd, agg, to_agg = var_num, a, b, c)
-    }
-  }
-
-  if (!is.null(ptage_col))  ptage_col <- names(nms[match(ptage_col, nms)])
-
-  dd <- dsvizprep::percentage_data(dd, agg_var = agg_var, by_col = ptage_col)
-
-  if (add_cols) {
-    join_cols <- dic_p$id[1:length(var_group)]
-    extra_cols <- setdiff(dic$id, c(dic_p$id, "..percentage", "..count", "value"))
-    dj <- d[c(join_cols, extra_cols)]
-
-    # extra num cols
-    dic_extra <- dic %>% dplyr::filter(id %in% extra_cols)
-    var_num_extra <- dic_extra$id[dic_extra$hdType == "Num"]
-    var_cat_extra <- dic_extra$id[dic_extra$hdType == "Cat"]
-    if (!identical(var_cat_extra, character())) {
-      dic$hdType[dic$id %in% var_cat_extra] <- "Cat.."
     }
 
-    if (!identical(var_num_extra, character())) {
-      # if (group_extra_num) {
-      #   if (length(join_cols) == 1) {
-      #     dj_s <- simple_summary(dj, agg, to_agg = var_num_extra, a)
-      #   } else if (length(join_cols) == 2) {
-      #     dj_s <- simple_summary(dj, agg, to_agg = var_num_extra, a, b)
-      #   } else if (length(join_cols) == 3) {
-      #     dj_s <- simple_summary(dj, agg, to_agg = var_num_extra, a, b, c)
-      #   }
-      #   dj <- dj %>% left_join(dj_s)
-      # } else {
-      dic$hdType[dic$id %in% var_num_extra] <- "Cat.."
-      #}
-    }
+    if (!is.null(ptage_col))  ptage_col <- names(nms[match(ptage_col, nms)])
 
-    if (length(join_cols) == 1) {
-      dj <- dsvizprep::collapse_data(dj, a)
-    } else if (length(join_cols) == 2) {
-      dj <- dsvizprep::collapse_data(dj, a, b)
-    } else if (length(join_cols) == 3) {
-      dj <- dsvizprep::collapse_data(dj, a, b, c)
-    }
+    dd <- dsvizprep::percentage_data(dd, agg_var = agg_var, by_col = ptage_col)
 
-    dd <- dd %>% dplyr::left_join(dj, by = join_cols)
+    if (add_cols) {
+      join_cols <- dic_p$id[1:length(var_group)]
+      extra_cols <- setdiff(dic$id, c(dic_p$id, "..percentage", "..count", "value"))
+      dj <- d[c(join_cols, extra_cols)]
+
+      # extra num cols
+      dic_extra <- dic %>% dplyr::filter(id %in% extra_cols)
+      var_num_extra <- dic_extra$id[dic_extra$hdType == "Num"]
+      var_cat_extra <- dic_extra$id[dic_extra$hdType == "Cat"]
+      if (!identical(var_cat_extra, character())) {
+        dic$hdType[dic$id %in% var_cat_extra] <- "Cat.."
+      }
+
+      if (!identical(var_num_extra, character())) {
+        # if (group_extra_num) {
+        #   if (length(join_cols) == 1) {
+        #     dj_s <- simple_summary(dj, agg, to_agg = var_num_extra, a)
+        #   } else if (length(join_cols) == 2) {
+        #     dj_s <- simple_summary(dj, agg, to_agg = var_num_extra, a, b)
+        #   } else if (length(join_cols) == 3) {
+        #     dj_s <- simple_summary(dj, agg, to_agg = var_num_extra, a, b, c)
+        #   }
+        #   dj <- dj %>% left_join(dj_s)
+        # } else {
+        dic$hdType[dic$id %in% var_num_extra] <- "Cat.."
+        #}
+      }
+
+      if (length(join_cols) == 1) {
+        dj <- dsvizprep::collapse_data(dj, a)
+      } else if (length(join_cols) == 2) {
+        dj <- dsvizprep::collapse_data(dj, a, b)
+      } else if (length(join_cols) == 3) {
+        dj <- dsvizprep::collapse_data(dj, a, b, c)
+      }
+
+      dd <- dd %>% dplyr::left_join(dj, by = join_cols)
+    }
+  } else {
+    agg_var <- "..count"
+    dd <- d
+    dd$..count <- 1
+    dd$..value <- 1
+    dd$..percentage <- 1/nrow(dd)
 
   }
 
