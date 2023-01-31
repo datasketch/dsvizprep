@@ -1,5 +1,6 @@
-stopwords_es <- read.csv("https://bitsandbricks.github.io/data/stopwords_es.csv",
+stopwords_es <- read.csv("data-raw/stopwords_es.csv",
                          stringsAsFactors = FALSE)
+
 stopwords_es$lang <- "es"
 stopwords_en <- data.frame(STOPWORD = unique(c('i', 'me', 'my', 'myself', 'we', 'our', 'ours',
                                                'ourselves', 'you', "you're", "you've", "you'll",
